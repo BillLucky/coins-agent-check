@@ -3,6 +3,11 @@
   "info": {
     "title": "Coins Agent Check",
     "version": "0.2.0",
+    "contact": {
+      "name": "Coins Agent Check",
+      "url": "https://coins.os.zhidun-ai.com"
+    },
+    "x-guidance": "Read /SKILL.md. Use costPreflight for free calculations from your own assumptions. For BSC receipt reconciliation, inspect x402 terms and authorize only 0.02 Base USDC under your own spending policy. Keep the random Idempotency-Key, exact body and original authorization private for retries. Never create a second payment to repair an unresolved one. No private keys or wallet sessions are accepted.",
     "description": "Preflight uses caller assumptions. Paid BSC receipt analysis uses one RPC, checks canonical block and at least 12 confirmations; no tracing, price feed or contract audit. Payments are 0.02 USDC on Base, not BSC."
   },
   "servers": [
@@ -15,6 +20,7 @@
       "post": {
         "operationId": "costPreflight",
         "summary": "Free exact-decimal cost and quote-age check",
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -102,7 +108,15 @@
         "summary": "Paid receipt gas, ERC-20 net flow and expected-transfer checks",
         "x-payment-info": {
           "protocols": [
-            "x402"
+            {
+              "x402": {
+                "x402Version": 2,
+                "scheme": "exact",
+                "network": "eip155:8453",
+                "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                "amount": "20000"
+              }
+            }
           ],
           "price": {
             "mode": "fixed",
