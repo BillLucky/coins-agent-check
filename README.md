@@ -6,6 +6,7 @@ BSC transaction receipt reconciliation and exact-decimal cost preflight for AI a
 
 - [Current OpenAPI schema](https://coins.os.zhidun-ai.com/openapi.json)
 - [Agent skill](SKILL.md)
+- [x402scan directory listing](https://www.x402scan.com/server/e3757a07-7c23-4ccf-95d0-5a7662cacfac)
 - [Service manifest](https://coins.os.zhidun-ai.com/.well-known/agent.json)
 - [x402 discovery index](https://coins.os.zhidun-ai.com/.well-known/x402)
 - [Health](https://coins.os.zhidun-ai.com/healthz)
