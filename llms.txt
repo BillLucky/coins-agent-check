@@ -1,21 +1,20 @@
 # Coins Agent Check
 
-> Tools for BSC trading agents: cost preflight and receipt reconciliation. Public alpha.
+> Read-only blockchain evidence and deterministic tools for eligible customers outside mainland China.
 
-- Homepage: https://coins.zhidun.ai/
+- Base URL: https://coins.zhidun.ai
+- Agent instructions: https://coins.zhidun.ai/SKILL.md
 - OpenAPI: https://coins.zhidun.ai/openapi.json
-- Agent skill: https://coins.zhidun.ai/SKILL.md
-- Service manifest: https://coins.zhidun.ai/.well-known/agent.json
-- x402 discovery index: https://coins.zhidun.ai/.well-known/x402
+- Service catalog: https://coins.zhidun.ai/api/v1/services
 - Health: https://coins.zhidun.ai/healthz
-- Privacy and service terms: https://coins.zhidun.ai/privacy.html
+- Terms: https://coins.zhidun.ai/privacy.html
+- Directory: https://www.x402scan.com/server/2e5afbfc-fdbd-4058-8534-0ec674db5375
+- Integration repository: https://github.com/BillLucky/coins-agent-check
 
-POST /v1/preflight is free and uses caller-supplied assumptions, not live market quotes.
-POST /v1/bsc/reconcile costs 0.02 USDC on Base (eip155:8453) per delivered report.
-The report analyzes BSC (chain 56); payment is on Base, a different chain.
-The paid endpoint needs a private random Idempotency-Key header. An unpaid request returns x402 v2 terms.
-Keep the exact request, key and signed authorization for retries. An unresolved payment is not a failed payment.
-Never send private keys, seed phrases, wallet sessions or exchange credentials.
-Public manifests support discovery; they do not imply registry indexing, an official Binance affiliation or verified customers.
+POST /api/v1/costs/preflight: free exact-decimal cost math from supplied assumptions.
+POST /api/v1/evm/calldata: free canonical ERC-20 ABI interpretation, not simulation.
+POST /api/v1/payments/usdc-receipt: Base USDC Transfer evidence; 20 L2 confirmations, not L1 finality.
+POST /api/v1/tokens/allowances: one-block ERC-20 balance/allowance evidence for up to three spenders on BSC or Base.
+POST /v1/bsc/reconcile: canonical BSC receipt, gas and Transfer-event net flows; 12 confirmations.
 
-Availability: offered only to customers outside mainland China where lawful. The actual customer and use determine eligibility, not the Agent hosting location. Review /privacy.html before purchasing.
+Each paid report costs 0.02 USDC on Base via x402 v2. No subscription. Paid reports require a private random Idempotency-Key, truthful actual-customer country and terms acceptance. Legacy BSC inputs use X-Customer-Country and X-Terms-Accepted headers; new inputs use JSON declarations. Never infer customer eligibility from Agent hosting. Preserve the exact request/key/payment authorization across retries; never sign a second payment to resolve uncertainty. No private keys accepted, asset execution, safety score, audited finality or profit guarantee. Public alpha; directory indexing is not proof of paying demand.

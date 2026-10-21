@@ -2,13 +2,13 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Coins Agent Check",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "contact": {
       "name": "Coins Agent Check",
       "url": "https://coins.zhidun.ai"
     },
-    "x-guidance": "Offered only to actual customers outside mainland China where lawful, subject to sanctions; an Agent hosting location does not determine customer eligibility. Read /privacy.html and /SKILL.md. Use costPreflight for free calculations from your own assumptions. For BSC receipt reconciliation, inspect x402 terms and authorize only 0.02 Base USDC under your own spending policy. Keep the random Idempotency-Key, exact body and original authorization private for retries. Never create a second payment to repair an unresolved one. No private keys or wallet sessions are accepted.",
-    "description": "Preflight uses caller assumptions. Paid BSC receipt analysis uses one RPC, checks canonical block and at least 12 confirmations; no tracing, price feed or contract audit. Payments are 0.02 USDC on Base, not BSC."
+    "description": "Read-only blockchain evidence and deterministic tools. Base L2 confirmations are not Ethereum finality. Calldata interpretation is not simulation or a safety audit.",
+    "x-guidance": "Actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
   },
   "servers": [
     {
@@ -16,10 +16,10 @@
     }
   ],
   "paths": {
-    "/v1/preflight": {
+    "/api/v1/costs/preflight": {
       "post": {
         "operationId": "costPreflight",
-        "summary": "Free exact-decimal cost and quote-age check",
+        "summary": "Exact-decimal cost and quote-age calculation using caller assumptions",
         "security": [],
         "requestBody": {
           "required": true,
@@ -85,19 +85,97 @@
                   "quoteAt"
                 ],
                 "additionalProperties": false
+              },
+              "example": {
+                "notionalUsd": "100",
+                "grossEdgeBps": "40",
+                "entryFeeBps": "0",
+                "exitFeeBps": "0",
+                "entrySlippageBps": "10",
+                "exitSlippageBps": "10",
+                "gasUsd": "0.20",
+                "otherCostUsd": "0",
+                "quoteAt": "2026-10-21T00:00:00Z"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Calculation using caller assumptions"
+            "description": "Result using supplied input; no transaction executed"
           },
           "400": {
-            "description": "Invalid input"
+            "description": "Invalid or unsupported input; no new settlement"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
           },
           "429": {
             "description": "Rate limited"
+          },
+          "503": {
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
+          }
+        }
+      }
+    },
+    "/api/v1/evm/calldata": {
+      "post": {
+        "operationId": "explainErc20Calldata",
+        "summary": "Decode canonical approve, transfer or transferFrom ABI; no simulation or execution",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "data": {
+                    "type": "string",
+                    "maxLength": 202,
+                    "pattern": "^0x[0-9a-fA-F]*$"
+                  },
+                  "valueRawWei": {
+                    "default": "0",
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,77})$"
+                  }
+                },
+                "required": [
+                  "to",
+                  "data"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "to": "0x3333333333333333333333333333333333333333",
+                "data": "0x095ea7b30000000000000000000000004444444444444444444444444444444444444444ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                "valueRawWei": "0"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result using supplied input; no transaction executed"
+          },
+          "400": {
+            "description": "Invalid or unsupported input; no new settlement"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
           }
         }
       }
@@ -105,7 +183,7 @@
     "/v1/bsc/reconcile": {
       "post": {
         "operationId": "reconcileBscReceipt",
-        "summary": "Paid receipt gas, ERC-20 net flow and expected-transfer checks",
+        "summary": "Canonical BSC receipt, gas, ERC-20 net flows and minimum receipts",
         "x-payment-info": {
           "protocols": [
             {
@@ -123,7 +201,7 @@
             "currency": "USD",
             "amount": "0.02"
           },
-          "note": "Paid in exactly 0.02 USDC on Base; runtime PAYMENT-REQUIRED is authoritative."
+          "note": "Base USDC payment. Runtime PAYMENT-REQUIRED is authoritative."
         },
         "parameters": [
           {
@@ -135,7 +213,27 @@
               "minLength": 24,
               "maxLength": 128
             },
-            "description": "Random private retrieval key. Preserve with the exact body and signed payment across retries."
+            "description": "Private random retrieval capability. Preserve with exact body and original payment across retries. Use a separate key per service and purchase."
+          },
+          {
+            "in": "header",
+            "name": "X-Customer-Country",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            "description": "Truthful actual customer country, outside mainland China; not Agent hosting location."
+          },
+          {
+            "in": "header",
+            "name": "X-Terms-Accepted",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "description": "Accept current /privacy.html service terms."
           }
         ],
         "requestBody": {
@@ -200,33 +298,407 @@
         },
         "responses": {
           "200": {
-            "description": "Delivered report and PAYMENT-RESPONSE; repeated identical requests retrieve the same report"
+            "description": "Evidence report; identical retries retrieve the original report"
           },
           "400": {
-            "description": "Invalid input; no settlement"
+            "description": "Invalid or unsupported input; no new settlement"
           },
           "402": {
-            "description": "x402 v2 PAYMENT-REQUIRED header; use a compatible buyer wallet with Base USDC"
+            "description": "x402 v2 PAYMENT-REQUIRED terms"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
           },
           "409": {
-            "description": "Request or payment is bound elsewhere/in progress; no new payment"
+            "description": "Request/key/nonce conflict or request in progress; never sign a second payment to repair it"
           },
           "425": {
-            "description": "Transaction unknown/pending, reorganized or below confirmation threshold; no settlement"
+            "description": "Evidence pending, stale, reorganized or insufficiently confirmed; no settlement"
           },
           "428": {
-            "description": "Private random Idempotency-Key required before submitting a payment"
+            "description": "Private random Idempotency-Key required"
           },
           "429": {
             "description": "Rate limited"
           },
           "502": {
-            "description": "Upstream evidence unavailable or inconsistent; no settlement"
+            "description": "Evidence unavailable or inconsistent; no settlement"
           },
           "503": {
-            "description": "Payment or service unavailable/unresolved; preserve payment and retry identically"
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
           }
         }
+      }
+    },
+    "/api/v1/payments/usdc-receipt": {
+      "post": {
+        "operationId": "verifyBaseUsdcReceipt",
+        "summary": "Verify canonical Base USDC Transfer evidence against a declared recipient and minimum",
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {
+                "x402Version": 2,
+                "scheme": "exact",
+                "network": "eip155:8453",
+                "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                "amount": "20000"
+              }
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.02"
+          },
+          "note": "Base USDC payment. Runtime PAYMENT-REQUIRED is authoritative."
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 128
+            },
+            "description": "Private random retrieval capability. Preserve with exact body and original payment across retries. Use a separate key per service and purchase."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "chainId": {
+                    "type": "number",
+                    "const": 8453
+                  },
+                  "txHash": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{64}$"
+                  },
+                  "recipient": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "expectedPayer": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "minimumReceivedRaw": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,77})$"
+                  },
+                  "customerCountryCode": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{2}$"
+                  },
+                  "termsAccepted": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "chainId",
+                  "txHash",
+                  "recipient",
+                  "minimumReceivedRaw",
+                  "customerCountryCode",
+                  "termsAccepted"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "chainId": 8453,
+                "txHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+                "recipient": "0x2222222222222222222222222222222222222222",
+                "minimumReceivedRaw": "20000",
+                "customerCountryCode": "US",
+                "termsAccepted": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evidence report; identical retries retrieve the original report"
+          },
+          "400": {
+            "description": "Invalid or unsupported input; no new settlement"
+          },
+          "402": {
+            "description": "x402 v2 PAYMENT-REQUIRED terms"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
+          },
+          "409": {
+            "description": "Request/key/nonce conflict or request in progress; never sign a second payment to repair it"
+          },
+          "425": {
+            "description": "Evidence pending, stale, reorganized or insufficiently confirmed; no settlement"
+          },
+          "428": {
+            "description": "Private random Idempotency-Key required"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "502": {
+            "description": "Evidence unavailable or inconsistent; no settlement"
+          },
+          "503": {
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
+          }
+        }
+      }
+    },
+    "/api/v1/tokens/allowances": {
+      "post": {
+        "operationId": "checkErc20Allowances",
+        "summary": "Read balance and declared spending permissions at one canonical block on BSC or Base",
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {
+                "x402Version": 2,
+                "scheme": "exact",
+                "network": "eip155:8453",
+                "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                "amount": "20000"
+              }
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.02"
+          },
+          "note": "Base USDC payment. Runtime PAYMENT-REQUIRED is authoritative."
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 128
+            },
+            "description": "Private random retrieval capability. Preserve with exact body and original payment across retries. Use a separate key per service and purchase."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "chainId": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "const": 56
+                      },
+                      {
+                        "type": "number",
+                        "const": 8453
+                      }
+                    ]
+                  },
+                  "owner": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "token": {
+                    "type": "string",
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "spenders": {
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    }
+                  },
+                  "customerCountryCode": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{2}$"
+                  },
+                  "termsAccepted": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "chainId",
+                  "owner",
+                  "token",
+                  "spenders",
+                  "customerCountryCode",
+                  "termsAccepted"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "chainId": 8453,
+                "owner": "0x2222222222222222222222222222222222222222",
+                "token": "0x3333333333333333333333333333333333333333",
+                "spenders": [
+                  "0x4444444444444444444444444444444444444444"
+                ],
+                "customerCountryCode": "US",
+                "termsAccepted": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evidence report; identical retries retrieve the original report"
+          },
+          "400": {
+            "description": "Invalid or unsupported input; no new settlement"
+          },
+          "402": {
+            "description": "x402 v2 PAYMENT-REQUIRED terms"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
+          },
+          "409": {
+            "description": "Request/key/nonce conflict or request in progress; never sign a second payment to repair it"
+          },
+          "425": {
+            "description": "Evidence pending, stale, reorganized or insufficiently confirmed; no settlement"
+          },
+          "428": {
+            "description": "Private random Idempotency-Key required"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "502": {
+            "description": "Evidence unavailable or inconsistent; no settlement"
+          },
+          "503": {
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
+          }
+        }
+      }
+    },
+    "/v1/preflight": {
+      "post": {
+        "operationId": "legacyCostPreflight",
+        "summary": "Exact-decimal cost and quote-age calculation using caller assumptions",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "notionalUsd": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,11})(\\.[0-9]{1,18})?$"
+                  },
+                  "grossEdgeBps": {
+                    "type": "string",
+                    "pattern": "^-?[0-9]{1,4}(\\.[0-9]{1,8})?$"
+                  },
+                  "entryFeeBps": {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,4}(\\.[0-9]{1,8})?$"
+                  },
+                  "exitFeeBps": {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,4}(\\.[0-9]{1,8})?$"
+                  },
+                  "entrySlippageBps": {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,4}(\\.[0-9]{1,8})?$"
+                  },
+                  "exitSlippageBps": {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,4}(\\.[0-9]{1,8})?$"
+                  },
+                  "gasUsd": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,11})(\\.[0-9]{1,18})?$"
+                  },
+                  "otherCostUsd": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,11})(\\.[0-9]{1,18})?$"
+                  },
+                  "quoteAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "maxQuoteAgeSeconds": {
+                    "default": 60,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3600
+                  }
+                },
+                "required": [
+                  "notionalUsd",
+                  "grossEdgeBps",
+                  "entryFeeBps",
+                  "exitFeeBps",
+                  "entrySlippageBps",
+                  "exitSlippageBps",
+                  "gasUsd",
+                  "otherCostUsd",
+                  "quoteAt"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "notionalUsd": "100",
+                "grossEdgeBps": "40",
+                "entryFeeBps": "0",
+                "exitFeeBps": "0",
+                "entrySlippageBps": "10",
+                "exitSlippageBps": "10",
+                "gasUsd": "0.20",
+                "otherCostUsd": "0",
+                "quoteAt": "2026-10-21T00:00:00Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result using supplied input; no transaction executed"
+          },
+          "400": {
+            "description": "Invalid or unsupported input; no new settlement"
+          },
+          "403": {
+            "description": "Customer eligibility restriction; no new settlement"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Unavailable or unresolved; preserve original request and payment authorization"
+          }
+        },
+        "deprecated": true
       }
     }
   }
