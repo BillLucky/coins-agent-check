@@ -25,3 +25,9 @@ Generate one private random Idempotency-Key per purchase and keep it with the ex
 On an unresolved settlement, resend the original request and authorization. Creating a fresh payment to fix a timeout can create a second charge. Our seller persists the report before attempting settlement and binds the payment nonce and key across products. An already-settled report can be retrieved without a new payment or a live RPC, subject to current eligibility controls.
 
 These are implementation boundaries, not evidence of an independently verified mainnet buyer payment or a service-level guarantee. Start with the two free tools and current schema, then decide whether a paid report solves a real workflow for an eligible customer.
+
+## Current payment verification status
+
+New purchases are paused. The two free tools remain available; existing settled reports keep their original retrieval path. Real official SDK client, resource-server, HTTP facilitator-client and facilitator-scheme integration was tested with ephemeral signatures and a simulated chain. This is not a mainnet payment claim.
+
+Independent settlement evidence must bind the original EIP-712 authorization, official USDC contract, exact receiver and amount, and the matching AuthorizationUsed authorizer/nonce event in the same canonical transaction. A successful unrelated old transfer, a facilitator success flag or a configuration match alone is insufficient. Self-payments are not independent customer revenue; receipt evidence does not prove receiver spending control or accounting ownership.

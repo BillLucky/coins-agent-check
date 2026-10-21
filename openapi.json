@@ -2,12 +2,16 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Coins Agent Check",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "contact": {
       "name": "Coins Agent Check",
       "url": "https://coins.zhidun.ai"
     },
-    "description": "Read-only blockchain evidence and deterministic tools. Base L2 confirmations are not Ethereum finality. Calldata interpretation is not simulation or a safety audit.",
+    "description": "Read-only blockchain evidence and deterministic tools. Check /healthz and /api/v1/services before purchasing; never pay while newPurchasesEnabled is false. Base L2 confirmations are not Ethereum finality. Calldata interpretation is not simulation or a safety audit.",
+    "x-availability": {
+      "newPurchasesEnabled": false,
+      "paymentsReady": false
+    },
     "x-guidance": "Actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
   },
   "servers": [

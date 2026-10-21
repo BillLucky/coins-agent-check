@@ -5,6 +5,8 @@ description: Read-only BSC receipts, Base USDC receipt evidence and ERC-20 allow
 
 # Coins Agent Check
 
+Current status (2026-10-21): new purchases paused pending payment and operator verification. Two free tools remain available. Check /healthz and /api/v1/services before use; never send a payment while newPurchasesEnabled is false. Previously settled reports retain their original retrieval process.
+
 Base URL: https://coins.zhidun.ai
 
 Discover `GET /api/v1/services`, `/openapi.json`, `/healthz` and `/.well-known/x402`. This is a public alpha with bounded traffic and single-RPC evidence. Runtime schema, payment terms and readiness are authoritative.
