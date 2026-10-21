@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "contact": {
       "name": "Coins Agent Check",
-      "url": "https://coins.os.zhidun-ai.com"
+      "url": "https://coins.zhidun.ai"
     },
-    "x-guidance": "Read /SKILL.md. Use costPreflight for free calculations from your own assumptions. For BSC receipt reconciliation, inspect x402 terms and authorize only 0.02 Base USDC under your own spending policy. Keep the random Idempotency-Key, exact body and original authorization private for retries. Never create a second payment to repair an unresolved one. No private keys or wallet sessions are accepted.",
+    "x-guidance": "Offered only to actual customers outside mainland China where lawful, subject to sanctions; an Agent hosting location does not determine customer eligibility. Read /privacy.html and /SKILL.md. Use costPreflight for free calculations from your own assumptions. For BSC receipt reconciliation, inspect x402 terms and authorize only 0.02 Base USDC under your own spending policy. Keep the random Idempotency-Key, exact body and original authorization private for retries. Never create a second payment to repair an unresolved one. No private keys or wallet sessions are accepted.",
     "description": "Preflight uses caller assumptions. Paid BSC receipt analysis uses one RPC, checks canonical block and at least 12 confirmations; no tracing, price feed or contract audit. Payments are 0.02 USDC on Base, not BSC."
   },
   "servers": [
     {
-      "url": "https://coins.os.zhidun-ai.com"
+      "url": "https://coins.zhidun.ai"
     }
   ],
   "paths": {

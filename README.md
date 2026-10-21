@@ -1,16 +1,16 @@
 # Coins Agent Check
 
-BSC transaction receipt reconciliation and exact-decimal cost preflight for AI agents. Public alpha, launched 21 October 2026.
+BSC transaction receipt reconciliation and exact-decimal cost preflight for AI agents. Public alpha, launched 21 October 2026. Offered only to actual customers outside mainland China where lawful; see the live service terms.
 
-**Live service: https://coins.os.zhidun-ai.com/**
+**Live service: https://coins.zhidun.ai/**
 
-- [Current OpenAPI schema](https://coins.os.zhidun-ai.com/openapi.json)
+- [Current OpenAPI schema](https://coins.zhidun.ai/openapi.json)
 - [Agent skill](SKILL.md)
-- [x402scan directory listing](https://www.x402scan.com/server/e3757a07-7c23-4ccf-95d0-5a7662cacfac)
-- [Service manifest](https://coins.os.zhidun-ai.com/.well-known/agent.json)
-- [x402 discovery index](https://coins.os.zhidun-ai.com/.well-known/x402)
-- [Health](https://coins.os.zhidun-ai.com/healthz)
-- [Privacy and service terms](https://coins.os.zhidun-ai.com/privacy.html)
+- [x402scan directory listing](https://www.x402scan.com/server/2e5afbfc-fdbd-4058-8534-0ec674db5375)
+- [Service manifest](https://coins.zhidun.ai/.well-known/agent.json)
+- [x402 discovery index](https://coins.zhidun.ai/.well-known/x402)
+- [Health](https://coins.zhidun.ai/healthz)
+- [Privacy and service terms](https://coins.zhidun.ai/privacy.html)
 
 ## What you can call
 
@@ -32,7 +32,7 @@ Invalid inputs, unknown/pending BSC transactions, insufficient confirmations and
 ## Quick discovery probe (no payment)
 
 ```sh
-curl -i -X POST https://coins.os.zhidun-ai.com/v1/bsc/reconcile
+curl -i -X POST https://coins.zhidun.ai/v1/bsc/reconcile
 ```
 
 This returns `402 Payment Required` and a machine-readable challenge. It does not submit a transaction or pay for a report.
