@@ -34,6 +34,6 @@ CHECK
 fi
 [[ "$("$scan_bin" version)" == "$revision" ]] || { echo 'Unexpected scanner version' >&2; exit 2; }
 unset GITLEAKS_CONFIG GITLEAKS_CONFIG_TOML
-config=()
-[[ ! -f .gitleaks.toml ]] || config=(--config "$repo_root/.gitleaks.toml")
-exec "$scan_bin" git --log-opts='--all --full-history' --no-banner --redact=100   --ignore-gitleaks-allow "${config[@]}" "$repo_root"
+scan_args=(git --log-opts='--all --full-history' --no-banner --redact=100 --ignore-gitleaks-allow)
+[[ ! -f .gitleaks.toml ]] || scan_args+=(--config "$repo_root/.gitleaks.toml")
+exec "$scan_bin" "${scan_args[@]}" "$repo_root"
