@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    ".github/workflows/checks.yml",
+    ".gitignore",
+    ".public-files.json",
+    "INTEGRATION_NOTES.md",
+    "README.md",
+    "SECURITY.md",
+    "SKILL.md",
+    "examples.html",
+    "examples/README.md",
+    "examples/bsc-reconcile.template.json",
+    "examples/calldata.example.json",
+    "examples/client.py",
+    "examples/cost.example.json",
+    "examples/erc20-allowances.template.json",
+    "examples/usdc-receipt.template.json",
+    "llms.txt",
+    "openapi.json",
+    "scripts/repository-guard.py",
+    "scripts/run-secret-scan.sh",
+    "tests/test_example_client.py"
+  ]
+}

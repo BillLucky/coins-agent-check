@@ -1,0 +1,12 @@
+{
+  "notionalUsd": "100",
+  "grossEdgeBps": "40",
+  "entryFeeBps": "0",
+  "exitFeeBps": "0",
+  "entrySlippageBps": "10",
+  "exitSlippageBps": "10",
+  "gasUsd": "0.20",
+  "otherCostUsd": "0",
+  "quoteAt": "2026-10-22T00:00:00Z",
+  "maxQuoteAgeSeconds": 60
+}

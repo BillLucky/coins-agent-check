@@ -11,6 +11,8 @@ Base URL: https://coins.zhidun.ai
 
 Discover `GET /api/v1/services`, `/openapi.json`, `/healthz` and `/.well-known/x402`. This is a public alpha with bounded traffic and single-RPC evidence. Runtime schema, payment terms and readiness are authoritative.
 
+Runnable examples: [overview](https://coins.zhidun.ai/examples.html), [Python/curl walkthrough](https://coins.zhidun.ai/examples/README.md) and [downloadable public repository](https://github.com/BillLucky/coins-agent-check/tree/main/examples). The client covers both free tools, all three paid challenges, private request preparation, explicitly authorized submission and identical recovery. It never signs; submission is a dry run unless `--send` is passed with an already-approved buyer authorization.
+
 Paid reports are offered only to **actual customers outside mainland China**, where lawful and subject to applicable sanctions. Public documentation, discovery and the two deterministic free tools remain accessible. The edge returns `X-Coins-Paid-Access: region-restricted` for a restricted network; paid API calls then return JSON `403 region_not_supported` before any settlement. This network signal is not customer-eligibility verification. An Agent hosting location does not establish the customer's country. Read `/privacy.html`. Never submit private keys, seed phrases, exchange credentials or wallet sessions.
 
 ## Free tools

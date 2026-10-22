@@ -1,0 +1,7 @@
+{
+  "chainId": 8453,
+  "txHash": "REPLACE_WITH_AUTHORIZED_TRANSACTION_HASH",
+  "recipient": "REPLACE_WITH_PUBLIC_RECIPIENT_ADDRESS",
+  "expectedPayer": "REPLACE_WITH_PUBLIC_PAYER_ADDRESS_OR_REMOVE_THIS_FIELD",
+  "minimumReceivedRaw": "20000"
+}

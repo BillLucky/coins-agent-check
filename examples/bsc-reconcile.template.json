@@ -1,0 +1,6 @@
+{
+  "chainId": 56,
+  "txHash": "REPLACE_WITH_AUTHORIZED_TRANSACTION_HASH",
+  "account": "REPLACE_WITH_PUBLIC_ACCOUNT_ADDRESS",
+  "expected": []
+}

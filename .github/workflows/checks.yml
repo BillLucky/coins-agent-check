@@ -1,0 +1,23 @@
+name: Public integration checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  examples-and-boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Public export boundary and offline client recovery tests
+        run: |
+          python3 scripts/repository-guard.py
+          python3 -m unittest discover -s tests -v
+      - name: Pinned secret scanner over reachable history
+        run: bash scripts/run-secret-scan.sh

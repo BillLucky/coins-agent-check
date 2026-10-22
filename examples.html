@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>API examples — Coins Agent Check</title><link rel="stylesheet" href="/style.css"></head>
+<body><main class="wrap document"><a href="/">← Coins Agent Check</a><h1>Try all five services.</h1>
+<p>Runnable Python 3.11+ and curl examples. Two free tools; three reports at 0.02 USDC on Base each. The example client never signs and never submits a payment unless explicitly run with <code>--send</code>.</p>
+<p><a href="/examples/README.md">Read the complete walkthrough →</a> · <a href="https://github.com/BillLucky/coins-agent-check/tree/main/examples">Download from GitHub ↗</a> · <a href="/openapi.json">Live OpenAPI ↗</a></p>
+<h2>Start without funds</h2><pre>python3 examples/client.py catalog
+python3 examples/client.py cost
+python3 examples/client.py calldata
+python3 examples/client.py challenge --service bsc-reconcile
+python3 examples/client.py challenge --service usdc-receipt
+python3 examples/client.py challenge --service erc20-allowances</pre>
+<p>The cost fixture models a small loss after supplied costs. The call-data fixture interprets an illustrative maximum ERC-20 approval. A 402 challenge is payment information, not a charge.</p>
+<h2>Use real input for a paid report</h2>
+<p>Choose an input template: <a href="/examples/bsc-reconcile.template.json">BSC receipt</a>, <a href="/examples/usdc-receipt.template.json">Base USDC receipt</a> or <a href="/examples/erc20-allowances.template.json">allowances</a>. Replace every placeholder and declare the actual eligible customer's country. Preparation saves an exact request and private retrieval key; an approved compatible buyer separately authorizes payment. Never submit a wallet private key or seed phrase.</p>
+<p>The <a href="/examples/README.md">walkthrough</a> covers authorization, explicit submission, recovery and response interpretation. Preserve one original body, key and authorization across retries. Creating a new payment to fix a timeout can charge twice.</p>
+<h2>Know the boundaries</h2><p>Paid services are for actual eligible customers outside mainland China, where lawful. Public docs and deterministic free tools are accessible. Network reachability does not establish customer eligibility. All reports are read-only evidence or calculations. Base L2 depth is not L1 finality; ABI decoding is not simulation; allowances are not a safety audit.</p>
+<p>Public alpha. Dependency readiness is not a service-level guarantee. No independently verified paying customer result yet. Read the <a href="/privacy.html">service terms</a> and <a href="/SKILL.md">Agent skill</a>.</p></main></body></html>

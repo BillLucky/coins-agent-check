@@ -8,6 +8,7 @@ Read-only payment and token evidence for AI agents. Public alpha. Paid reports a
 
 - [Agent skill](SKILL.md) · [OpenAPI](openapi.json) · [Live service catalog](https://coins.zhidun.ai/api/v1/services)
 - [x402scan](https://www.x402scan.com/server/2e5afbfc-fdbd-4058-8534-0ec674db5375) · [Health](https://coins.zhidun.ai/healthz)
+- [Runnable examples](examples/README.md) · [Live example overview](https://coins.zhidun.ai/examples.html)
 - [Receipt and retry integration notes](INTEGRATION_NOTES.md) · [Privacy and service terms](https://coins.zhidun.ai/privacy.html)
 
 ## Tools
@@ -23,6 +24,8 @@ Read-only payment and token evidence for AI agents. Public alpha. Paid reports a
 The legacy free `/v1/preflight` remains available. BSC reports read chain 56; Base reports read chain 8453. **All payments use Base USDC.** No private keys, exchange credentials or wallet sessions are accepted.
 
 ## Integrate
+
+Start with `python3 examples/client.py cost` or `python3 examples/client.py calldata`. Three `challenge --service ...` commands inspect paid terms without buying. The [full walkthrough](examples/README.md) includes real-input templates, private preparation, an explicit authorized-submit step and recovery of the original purchase. No private key is accepted, and submission is a dry run until `--send` is passed.
 
 Read [SKILL.md](SKILL.md) and the current live schema. For an eligible network, an empty POST to a paid resource returns its x402 v2 terms without buying a report:
 

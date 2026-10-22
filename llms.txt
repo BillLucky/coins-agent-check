@@ -9,6 +9,8 @@ Paid alpha: the three report services use per-report x402 payments when live dep
 - Service catalog: https://coins.zhidun.ai/api/v1/services
 - Health: https://coins.zhidun.ai/healthz
 - Terms: https://coins.zhidun.ai/privacy.html
+- Runnable examples: https://coins.zhidun.ai/examples.html
+- Python/curl walkthrough: https://coins.zhidun.ai/examples/README.md
 - Directory: https://www.x402scan.com/server/2e5afbfc-fdbd-4058-8534-0ec674db5375
 - Integration repository: https://github.com/BillLucky/coins-agent-check
 
