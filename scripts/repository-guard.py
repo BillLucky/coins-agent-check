@@ -47,6 +47,8 @@ def main():
             data = path.read_bytes()
             if re.search(rb"(?m)^-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----\s*$", data):
                 errors.append({"path": name, "rule": "private_key_material"})
+            if re.search(rb"https://open\.feishu\.cn/open-apis/bot/v2/hook/[a-fA-F0-9-]{36}", data):
+                errors.append({"path": name, "rule": "private_feishu_webhook"})
     required_ignores = [".env", ".env.local", "service.env", "compose.env", ".local/state.json", "docs/private/check.json", ".runtime/payments.sqlite", "example.key"]
     for name in required_ignores:
         if subprocess.run(["git", "check-ignore", "-q", name], cwd=root).returncode:
