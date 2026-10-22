@@ -2,7 +2,7 @@
 
 **Paid alpha — 22 October 2026:** Three report services accept per-report x402 payments when live dependencies are ready; two deterministic tools remain free. Check `/healthz` and `/api/v1/services` before buying. Reports are saved before settlement and identical paid requests retrieve their original report without a second charge.
 
-Read-only payment and token evidence for AI agents. Public alpha. Offered only to actual customers outside mainland China, where lawful and subject to applicable sanctions.
+Read-only payment and token evidence for AI agents. Public alpha. Paid reports are offered only to actual customers outside mainland China, where lawful and subject to applicable sanctions. Public pages, discovery and the two deterministic free tools remain accessible.
 
 **Live gateway: https://coins.zhidun.ai/**
 
@@ -24,13 +24,15 @@ The legacy free `/v1/preflight` remains available. BSC reports read chain 56; Ba
 
 ## Integrate
 
-Read [SKILL.md](SKILL.md) and the current live schema. An empty POST to a paid resource returns its x402 v2 terms without buying a report:
+Read [SKILL.md](SKILL.md) and the current live schema. For an eligible network, an empty POST to a paid resource returns its x402 v2 terms without buying a report:
 
 ```sh
 curl -i -X POST https://coins.zhidun.ai/api/v1/payments/usdc-receipt
 ```
 
 Before using an approved compatible buyer, verify the amount, asset, network, recipient and resource URL against your authorization. Use a separate private random `Idempotency-Key` for each service and new purchase. Preserve the exact body, key and original payment authorization across retries; never sign another payment to repair an unknown settlement. Successful duplicate requests retrieve the original report, including when the live chain/payment upstream is unavailable, subject to current eligibility controls.
+
+A restricted network receives `X-Coins-Paid-Access: region-restricted` and paid calls return JSON `403 region_not_supported` before settlement. `check-eligibility` and global `paymentsReady` do not establish actual customer eligibility. See the service terms and contact support about a network classification error.
 
 New paid inputs require truthful `customerCountryCode` and `termsAccepted: true`. Legacy BSC inputs use `X-Customer-Country` and `X-Terms-Accepted: true` headers. The actual customer's location determines eligibility; Agent hosting does not. Example countries and addresses must be replaced with real authorized input.
 

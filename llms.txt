@@ -1,7 +1,7 @@
 # Coins Agent Check
 
 Paid alpha: the three report services use per-report x402 payments when live dependencies are ready. Two deterministic tools remain free. Check /healthz and /api/v1/services before purchasing; a previously settled report is retrieved with its original request and private Idempotency-Key without a second payment.
-> Read-only blockchain evidence and deterministic tools for eligible customers outside mainland China.
+> Paid read-only blockchain evidence for eligible customers outside mainland China; public documentation and free deterministic tools.
 
 - Base URL: https://coins.zhidun.ai
 - Agent instructions: https://coins.zhidun.ai/SKILL.md

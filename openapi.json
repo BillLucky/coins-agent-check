@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Coins Agent Check",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "contact": {
       "name": "Coins Agent Check",
       "url": "https://coins.zhidun.ai"
@@ -12,7 +12,7 @@
       "newPurchasesEnabled": true,
       "paymentsReady": true
     },
-    "x-guidance": "Actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
+    "x-guidance": "Paid reports are offered to actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
   },
   "servers": [
     {
