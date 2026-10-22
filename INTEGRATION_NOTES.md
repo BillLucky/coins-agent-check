@@ -28,6 +28,8 @@ These are implementation boundaries, not evidence of an independently verified m
 
 ## Current payment verification status
 
-New purchases are paused. The two free tools remain available; existing settled reports keep their original retrieval path. Real official SDK client, resource-server, HTTP facilitator-client and facilitator-scheme integration was tested with ephemeral signatures and a simulated chain. This is not a mainnet payment claim.
+The three evidence reports are open as a per-report paid alpha; the two deterministic tools remain free. Existing settled reports keep their original retrieval path. Real official SDK client, resource-server, HTTP facilitator-client and facilitator-scheme integration was tested with ephemeral signatures and a simulated chain. This is not a mainnet payment claim.
 
 Independent settlement evidence must bind the original EIP-712 authorization, official USDC contract, exact receiver and amount, and the matching AuthorizationUsed authorizer/nonce event in the same canonical transaction. A successful unrelated old transfer, a facilitator success flag or a configuration match alone is insufficient. Self-payments are not independent customer revenue; receipt evidence does not prove receiver spending control or accounting ownership.
+
+The existing API process now independently audits at most one settled receipt each minute, saving confirmed/retry/review states privately. Confirmation-depth and RPC failures back off without delaying report delivery or signing another payment. A chain-confirmed receipt is still separate from proof of customer independence and receiver spending control.

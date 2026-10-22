@@ -1,6 +1,6 @@
 # Coins Agent Check
 
-**Status update — 21 October 2026:** New paid purchases are paused pending payment and operator verification. The two free tools remain available. Previously settled reports retain their original private-key retrieval process. Check live `/healthz` and `/api/v1/services`; do not pay while `newPurchasesEnabled` is false.
+**Paid alpha — 22 October 2026:** Three report services accept per-report x402 payments when live dependencies are ready; two deterministic tools remain free. Check `/healthz` and `/api/v1/services` before buying. Reports are saved before settlement and identical paid requests retrieve their original report without a second charge.
 
 Read-only payment and token evidence for AI agents. Public alpha. Offered only to actual customers outside mainland China, where lawful and subject to applicable sanctions.
 
