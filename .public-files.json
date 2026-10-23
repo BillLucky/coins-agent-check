@@ -10,6 +10,7 @@
     "SKILL.md",
     "examples.html",
     "examples/README.md",
+    "examples/agentcash.md",
     "examples/bsc-reconcile.template.json",
     "examples/calldata.example.json",
     "examples/client.py",

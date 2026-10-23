@@ -2,10 +2,11 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Coins Agent Check",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "contact": {
       "name": "Coins Agent Check",
-      "url": "https://coins.zhidun.ai"
+      "url": "https://coins.zhidun.ai",
+      "email": "support@zhidun.ai"
     },
     "description": "Read-only blockchain evidence and deterministic tools. Check /healthz and /api/v1/services before purchasing; never pay while newPurchasesEnabled is false. Base L2 confirmations are not Ethereum finality. Calldata interpretation is not simulation or a safety audit.",
     "x-availability": {
@@ -13,13 +14,24 @@
       "paymentsReady": true
     },
     "x-examples": "https://coins.zhidun.ai/examples.html",
-    "x-guidance": "Paid reports are offered to actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
+    "x-free-receipt-example": "https://coins.zhidun.ai/demo/usdc-receipt.json",
+    "x-guidance": "Paid reports are offered to actual customers outside mainland China only, where lawful and subject to sanctions. Read /privacy.html; an Agent hosting location does not establish customer eligibility. Read /SKILL.md. First inspect /demo/usdc-receipt.json for one fixed, free public historical receipt; it is not the caller's payment. Read /examples/agentcash.md for merchant integration. Free tools do not execute transactions. Paid reports cost 0.02 Base USDC. Replace all example addresses, hashes and country codes with real, authorized input. Never infer the customer country from Agent hosting. Preserve the private Idempotency-Key, exact body and original authorization for retries; never create another payment to repair an unresolved one. No private keys or wallet sessions are accepted."
   },
   "servers": [
     {
       "url": "https://coins.zhidun.ai"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "X402Payment": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "PAYMENT-SIGNATURE",
+        "description": "Per-request x402 v2 authorization from an approved buyer. First request may be unauthenticated to inspect 402 terms. Never send a wallet key."
+      }
+    }
+  },
   "paths": {
     "/api/v1/costs/preflight": {
       "post": {
@@ -107,7 +119,74 @@
         },
         "responses": {
           "200": {
-            "description": "Result using supplied input; no transaction executed"
+            "description": "Result using supplied input; no transaction executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "cost_preflight"
+                    },
+                    "asOf": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "dataSource": {
+                      "type": "string",
+                      "const": "caller_supplied_assumptions"
+                    },
+                    "modeledProfitUsd": {
+                      "type": "string",
+                      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                    },
+                    "breakEvenGrossEdgeBps": {
+                      "type": "string",
+                      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                    },
+                    "quoteAgeSeconds": {
+                      "type": "number"
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "kind",
+                    "asOf",
+                    "dataSource",
+                    "modeledProfitUsd",
+                    "breakEvenGrossEdgeBps",
+                    "quoteAgeSeconds",
+                    "flags"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"
@@ -168,7 +247,82 @@
         },
         "responses": {
           "200": {
-            "description": "Result using supplied input; no transaction executed"
+            "description": "Result using supplied input; no transaction executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "erc20_calldata_interpretation"
+                    },
+                    "target": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "selector": {
+                      "type": "string"
+                    },
+                    "interpretedAs": {
+                      "type": "string",
+                      "enum": [
+                        "approve",
+                        "transfer",
+                        "transferFrom"
+                      ]
+                    },
+                    "arguments": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "attachedNativeValueRawWei": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "kind",
+                    "target",
+                    "selector",
+                    "interpretedAs",
+                    "arguments",
+                    "attachedNativeValueRawWei",
+                    "flags"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"
@@ -189,6 +343,11 @@
       "post": {
         "operationId": "reconcileBscReceipt",
         "summary": "Canonical BSC receipt, gas, ERC-20 net flows and minimum receipts",
+        "security": [
+          {
+            "X402Payment": []
+          }
+        ],
         "x-payment-info": {
           "protocols": [
             {
@@ -303,7 +462,238 @@
         },
         "responses": {
           "200": {
-            "description": "Evidence report; identical retries retrieve the original report"
+            "description": "Evidence report; identical retries retrieve the original report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "asOf": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "chainId": {
+                      "type": "number",
+                      "const": 56
+                    },
+                    "txHash": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{64}$"
+                    },
+                    "account": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "reportId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed_success",
+                        "confirmed_reverted"
+                      ]
+                    },
+                    "blockNumber": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "blockHash": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{64}$"
+                    },
+                    "confirmations": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "evidence": {
+                      "type": "string",
+                      "const": "canonical_block_checked_receipt_logs_single_rpc"
+                    },
+                    "networkFee": {
+                      "type": "object",
+                      "properties": {
+                        "payer": {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        "rawWei": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]*)$"
+                        },
+                        "nativeSymbol": {
+                          "type": "string",
+                          "enum": [
+                            "BNB",
+                            "ETH"
+                          ]
+                        },
+                        "nativeAmount": {
+                          "type": "string",
+                          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                        },
+                        "usd": {
+                          "type": "null"
+                        },
+                        "scope": {
+                          "type": "string",
+                          "const": "evm_execution_component_only"
+                        },
+                        "totalNetworkFeeRawWei": {
+                          "type": "null"
+                        },
+                        "note": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "payer",
+                        "rawWei",
+                        "nativeSymbol",
+                        "nativeAmount",
+                        "usd"
+                      ],
+                      "additionalProperties": {}
+                    },
+                    "nativeTransfer": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        "to": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^0x[0-9a-fA-F]{40}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "rawWei": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]*)$"
+                        },
+                        "applied": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "from",
+                        "to",
+                        "rawWei",
+                        "applied"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "tokenFlows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "receivedRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "sentRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "netReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                          }
+                        },
+                        "required": [
+                          "token",
+                          "receivedRaw",
+                          "sentRaw",
+                          "netReceivedRaw"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "expectedTransferChecks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "minimumNetReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "actualNetReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                          },
+                          "met": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "token",
+                          "minimumNetReceivedRaw",
+                          "actualNetReceivedRaw",
+                          "met"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "bsc_receipt_reconciliation"
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "asOf",
+                    "chainId",
+                    "txHash",
+                    "account",
+                    "status",
+                    "blockNumber",
+                    "blockHash",
+                    "confirmations",
+                    "evidence",
+                    "networkFee",
+                    "nativeTransfer",
+                    "tokenFlows",
+                    "expectedTransferChecks",
+                    "kind"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"
@@ -339,6 +729,11 @@
       "post": {
         "operationId": "verifyBaseUsdcReceipt",
         "summary": "Verify canonical Base USDC Transfer evidence against a declared recipient and minimum",
+        "security": [
+          {
+            "X402Payment": []
+          }
+        ],
         "x-payment-info": {
           "protocols": [
             {
@@ -431,7 +826,351 @@
         },
         "responses": {
           "200": {
-            "description": "Evidence report; identical retries retrieve the original report"
+            "description": "Evidence report; identical retries retrieve the original report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "asOf": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "chainId": {
+                      "type": "number",
+                      "const": 8453
+                    },
+                    "txHash": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{64}$"
+                    },
+                    "account": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "reportId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed_success",
+                        "confirmed_reverted"
+                      ]
+                    },
+                    "blockNumber": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "blockHash": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{64}$"
+                    },
+                    "confirmations": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "evidence": {
+                      "type": "string",
+                      "const": "canonical_block_checked_receipt_logs_single_rpc"
+                    },
+                    "networkFee": {
+                      "type": "object",
+                      "properties": {
+                        "payer": {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        "rawWei": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]*)$"
+                        },
+                        "nativeSymbol": {
+                          "type": "string",
+                          "enum": [
+                            "BNB",
+                            "ETH"
+                          ]
+                        },
+                        "nativeAmount": {
+                          "type": "string",
+                          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                        },
+                        "usd": {
+                          "type": "null"
+                        },
+                        "scope": {
+                          "type": "string",
+                          "const": "evm_execution_component_only"
+                        },
+                        "totalNetworkFeeRawWei": {
+                          "type": "null"
+                        },
+                        "note": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "payer",
+                        "rawWei",
+                        "nativeSymbol",
+                        "nativeAmount",
+                        "usd"
+                      ],
+                      "additionalProperties": {}
+                    },
+                    "nativeTransfer": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        "to": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^0x[0-9a-fA-F]{40}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "rawWei": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]*)$"
+                        },
+                        "applied": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "from",
+                        "to",
+                        "rawWei",
+                        "applied"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "tokenFlows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "receivedRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "sentRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "netReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                          }
+                        },
+                        "required": [
+                          "token",
+                          "receivedRaw",
+                          "sentRaw",
+                          "netReceivedRaw"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "expectedTransferChecks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "minimumNetReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "actualNetReceivedRaw": {
+                            "type": "string",
+                            "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                          },
+                          "met": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "token",
+                          "minimumNetReceivedRaw",
+                          "actualNetReceivedRaw",
+                          "met"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "base_usdc_receipt_verification"
+                    },
+                    "token": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "tokenDecimals": {
+                      "type": "number",
+                      "const": 6
+                    },
+                    "recipient": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "expectedPayer": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "matchedReceivedRaw": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "minimumReceivedRaw": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "minimumReceivedMet": {
+                      "type": "boolean"
+                    },
+                    "matchedTransfers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "to": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "amountRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "logIndex": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "amountRaw",
+                          "logIndex"
+                        ],
+                        "additionalProperties": {}
+                      }
+                    },
+                    "transferEvidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "to": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "amountRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "logIndex": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "amountRaw",
+                          "logIndex"
+                        ],
+                        "additionalProperties": {}
+                      }
+                    },
+                    "payerAttribution": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "asOf",
+                    "chainId",
+                    "txHash",
+                    "account",
+                    "status",
+                    "blockNumber",
+                    "blockHash",
+                    "confirmations",
+                    "evidence",
+                    "networkFee",
+                    "nativeTransfer",
+                    "tokenFlows",
+                    "expectedTransferChecks",
+                    "kind",
+                    "token",
+                    "tokenDecimals",
+                    "recipient",
+                    "expectedPayer",
+                    "matchedReceivedRaw",
+                    "minimumReceivedRaw",
+                    "minimumReceivedMet",
+                    "matchedTransfers",
+                    "transferEvidence",
+                    "payerAttribution"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"
@@ -467,6 +1206,11 @@
       "post": {
         "operationId": "checkErc20Allowances",
         "summary": "Read balance and declared spending permissions at one canonical block on BSC or Base",
+        "security": [
+          {
+            "X402Payment": []
+          }
+        ],
         "x-payment-info": {
           "protocols": [
             {
@@ -570,7 +1314,147 @@
         },
         "responses": {
           "200": {
-            "description": "Evidence report; identical retries retrieve the original report"
+            "description": "Evidence report; identical retries retrieve the original report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "erc20_allowance_snapshot"
+                    },
+                    "asOf": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "reportId": {
+                      "type": "string"
+                    },
+                    "chainId": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "const": 56
+                        },
+                        {
+                          "type": "number",
+                          "const": 8453
+                        }
+                      ]
+                    },
+                    "owner": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "token": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{40}$"
+                    },
+                    "blockNumber": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "blockHash": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-fA-F]{64}$"
+                    },
+                    "blockTimestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "balanceRaw": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9][0-9]*)$"
+                    },
+                    "decimals": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 255
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "evidence": {
+                      "type": "string"
+                    },
+                    "allowances": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "spender": {
+                            "type": "string",
+                            "pattern": "^0x[0-9a-fA-F]{40}$"
+                          },
+                          "allowanceRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "equalsMaxUint256": {
+                            "type": "boolean"
+                          },
+                          "exceedsCurrentBalance": {
+                            "type": "boolean"
+                          },
+                          "currentBalanceCoveredByAllowanceRaw": {
+                            "type": "string",
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          }
+                        },
+                        "required": [
+                          "spender",
+                          "allowanceRaw",
+                          "equalsMaxUint256",
+                          "exceedsCurrentBalance",
+                          "currentBalanceCoveredByAllowanceRaw"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "kind",
+                    "asOf",
+                    "chainId",
+                    "owner",
+                    "token",
+                    "blockNumber",
+                    "blockHash",
+                    "blockTimestamp",
+                    "balanceRaw",
+                    "decimals",
+                    "evidence",
+                    "allowances"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"
@@ -688,7 +1572,74 @@
         },
         "responses": {
           "200": {
-            "description": "Result using supplied input; no transaction executed"
+            "description": "Result using supplied input; no transaction executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "schemaVersion": {
+                      "type": "string",
+                      "const": "1"
+                    },
+                    "requestHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "const": "cost_preflight"
+                    },
+                    "asOf": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "dataSource": {
+                      "type": "string",
+                      "const": "caller_supplied_assumptions"
+                    },
+                    "modeledProfitUsd": {
+                      "type": "string",
+                      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                    },
+                    "breakEvenGrossEdgeBps": {
+                      "type": "string",
+                      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+                    },
+                    "quoteAgeSeconds": {
+                      "type": "number"
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "schemaVersion",
+                    "requestHash",
+                    "limitations",
+                    "kind",
+                    "asOf",
+                    "dataSource",
+                    "modeledProfitUsd",
+                    "breakEvenGrossEdgeBps",
+                    "quoteAgeSeconds",
+                    "flags"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unsupported input; no new settlement"

@@ -1,4 +1,6 @@
 import base64
+import contextlib
+import io
 import importlib.util
 import json
 from pathlib import Path
@@ -22,6 +24,12 @@ def challenge():
 
 
 class ExampleClientTests(unittest.TestCase):
+    def test_free_receipt_demo_only_reads_the_fixed_endpoint_and_rejects_non_demo_data(self):
+        for value,code in [({"sampleOnly":True,"paymentAttempted":False},0),({"sampleOnly":False,"paymentAttempted":True},1)]:
+            with patch.object(client.sys,'argv',['client.py','demo']),patch.object(client,'request',return_value=(200,{},value)) as request,contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(client.main(),code)
+                request.assert_called_once_with(client.ORIGIN,'/demo/usdc-receipt.json')
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

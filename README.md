@@ -6,6 +6,8 @@ Read-only payment and token evidence for AI agents. Public alpha. Paid reports a
 
 **Live gateway: https://coins.zhidun.ai/**
 
+**For merchants and wallet agents investigating Base USDC receipts:** [run a free public-chain example](https://coins.zhidun.ai/?ref=github#receipt-demo) before integrating. It reads one fixed historical transaction, accepts no caller input and makes no payment. Then use the [merchant/AgentCash workflow](examples/agentcash.md) for your own authorized input at 0.02 USDC per report. Receipt evidence is separate from invoice uniqueness and fulfillment.
+
 - [Agent skill](SKILL.md) · [OpenAPI](openapi.json) · [Live service catalog](https://coins.zhidun.ai/api/v1/services)
 - [x402scan](https://www.x402scan.com/server/2e5afbfc-fdbd-4058-8534-0ec674db5375) · [Health](https://coins.zhidun.ai/healthz)
 - [Runnable examples](examples/README.md) · [Live example overview](https://coins.zhidun.ai/examples.html)
@@ -27,7 +29,7 @@ The legacy free `/v1/preflight` remains available. BSC reports read chain 56; Ba
 
 ## Integrate
 
-Start with `python3 examples/client.py cost` or `python3 examples/client.py calldata`. Three `challenge --service ...` commands inspect paid terms without buying. The [full walkthrough](examples/README.md) includes real-input templates, private preparation, an explicit authorized-submit step and recovery of the original purchase. No private key is accepted, and submission is a dry run until `--send` is passed.
+Start with `python3 examples/client.py demo`, `python3 examples/client.py cost` or `python3 examples/client.py calldata`. Three `challenge --service ...` commands inspect paid terms without buying. The [full walkthrough](examples/README.md) includes real-input templates, private preparation, an explicit authorized-submit step and recovery of the original purchase. No private key is accepted, and submission is a dry run until `--send` is passed.
 
 Read [SKILL.md](SKILL.md) and the current live schema. For an eligible network, an empty POST to a paid resource returns its x402 v2 terms without buying a report:
 

@@ -21,3 +21,5 @@ POST /api/v1/tokens/allowances: one-block ERC-20 balance/allowance evidence for 
 POST /v1/bsc/reconcile: canonical BSC receipt, gas and Transfer-event net flows; 12 confirmations.
 
 Each paid report costs 0.02 USDC on Base via x402 v2. No subscription. Paid reports require a private random Idempotency-Key, truthful actual-customer country and terms acceptance. Legacy BSC inputs use X-Customer-Country and X-Terms-Accepted headers; new inputs use JSON declarations. Never infer customer eligibility from Agent hosting. Preserve the exact request/key/payment authorization across retries; never sign a second payment to resolve uncertainty. No private keys accepted, asset execution, safety score, audited finality or profit guarantee. Public alpha; directory indexing is not proof of paying demand.
+
+Free fixed public-chain receipt example: https://coins.zhidun.ai/demo/usdc-receipt.json — no inputs or payment, cached up to five minutes; not a checkout test or the caller's receipt.

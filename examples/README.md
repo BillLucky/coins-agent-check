@@ -6,6 +6,15 @@ The first commands are free. Paid preparation only inspects terms and creates lo
 
 ## 1. Discover all five tools
 
+Start with a free fixed public-chain receipt example to see what the paid report format looks like:
+
+```sh
+python3 examples/client.py demo
+curl --fail-with-body https://coins.zhidun.ai/demo/usdc-receipt.json
+```
+
+The response is explicitly `sampleOnly: true`, `paymentAttempted: false`, `notPaymentForThisService: true`. It reads one fixed historical public Base USDC transaction and caches it for up to five minutes. It never accepts your transaction input, signs or buys anything. Temporary RPC failure is an error, not a fabricated successful example. It is not proof of a customer payment to Coins.
+
 ```sh
 python3 examples/client.py catalog
 curl --fail-with-body --silent --show-error https://coins.zhidun.ai/api/v1/services

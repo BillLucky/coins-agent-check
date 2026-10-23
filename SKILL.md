@@ -9,6 +9,8 @@ Paid alpha: the three report services use per-report x402 payments when live dep
 
 Base URL: https://coins.zhidun.ai
 
+For x402 merchants and wallet agents: first inspect `GET /demo/usdc-receipt.json`. It is a free, fixed historical public Base USDC example using the same receipt engine as the paid service, cached for up to five minutes. It accepts no transaction parameters or payment headers. `sampleOnly: true` and `notPaymentForThisService: true` mean it is not your receipt or a funded checkout test. For your own input, use the paid POST workflow below.
+
 Discover `GET /api/v1/services`, `/openapi.json`, `/healthz` and `/.well-known/x402`. This is a public alpha with bounded traffic and single-RPC evidence. Runtime schema, payment terms and readiness are authoritative.
 
 Runnable examples: [overview](https://coins.zhidun.ai/examples.html), [Python/curl walkthrough](https://coins.zhidun.ai/examples/README.md) and [downloadable public repository](https://github.com/BillLucky/coins-agent-check/tree/main/examples). The client covers both free tools, all three paid challenges, private request preparation, explicitly authorized submission and identical recovery. It never signs; submission is a dry run unless `--send` is passed with an already-approved buyer authorization.

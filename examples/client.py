@@ -177,6 +177,7 @@ def main():
     parser.add_argument("--base-url", default=ORIGIN)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("catalog")
+    commands.add_parser("demo")
     commands.add_parser("cost")
     calldata = commands.add_parser("calldata")
     calldata.add_argument("--input", type=Path, default=HERE / "calldata.example.json")
@@ -199,6 +200,10 @@ def main():
             status, _headers, result = request(args.base_url, "/api/v1/services")
             if status != 200:
                 raise ExampleError(f"Catalog unavailable: HTTP {status}")
+        elif args.command == "demo":
+            status, _headers, result = request(args.base_url, "/demo/usdc-receipt.json")
+            if status != 200 or result.get("sampleOnly") is not True or result.get("paymentAttempted") is not False:
+                raise ExampleError(f"Fixed public example unavailable: HTTP {status}. No payment attempted.")
         elif args.command == "cost":
             body = json.loads((HERE / "cost.example.json").read_text())
             body["quoteAt"] = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
