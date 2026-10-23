@@ -11,6 +11,8 @@ Read-only payment and token evidence for AI agents. Public alpha. Paid reports a
 - [Runnable examples](examples/README.md) · [Live example overview](https://coins.zhidun.ai/examples.html)
 - [Receipt and retry integration notes](INTEGRATION_NOTES.md) · [Privacy and service terms](https://coins.zhidun.ai/privacy.html)
 
+For an exact x402scan lookup, open [All](https://www.x402scan.com/all) and enter `zhidun.ai`, or use the direct listing above. Checked on 23 October 2026: the listing contains all five tools plus the legacy free route. The Discover homepage uses a usage-filtered semantic search, so it is not a complete domain lookup and registration does not guarantee recommendation visibility. The live catalog and schema remain authoritative for availability.
+
 ## Tools
 
 | POST path | Price | Result |
